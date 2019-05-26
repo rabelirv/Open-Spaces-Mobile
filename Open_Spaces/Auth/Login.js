@@ -18,12 +18,12 @@ class Login extends React.Component {
     body: JSON.stringify({user:state})
   })
   .then(res =>res.json())
-  .then(res =>this.isUserLoggedIn(res.jwt))
+  .then(res =>this.isUserLoggedIn(res))
   .catch(err=>console.log(err))
   }
 
   isUserLoggedIn = (token)=>{
-    console.log(token)
+    console.log("In user login",token)
     if (token) {
       AsyncStorage.setItem('token', JSON.stringify(token))
     }else {

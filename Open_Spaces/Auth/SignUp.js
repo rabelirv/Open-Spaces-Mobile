@@ -10,31 +10,6 @@ class SignUp extends React.Component {
     avatar:"",
 }
 
-// componentDidMount(){
-//     let token = AsyncStorage.getItem('token')
-//     this.setState({token:token})
-//     fetch("http://localhost:3000/api/v1/current_user",{
-//       method: 'GET',
-//       headers:{
-//         'Content-Type': "application/json",
-//         Accept: "application/json",
-//         Authorization: `Bearer ${token}`
-//       }
-//     })
-//     .then(res=> res.json())
-//     .then(res => {
-//       this.setState({
-//       user:res.user
-//     })
-//     if (token) {
-//       console.log("Token:",token)
-//     }else {
-//       this.props.navigation.navigate("SignUp")
-//     }
-//   }
-//   )
-  // }
-
   isUserLoggedIn = (token)=>{
     console.log(token)
     if (token) {

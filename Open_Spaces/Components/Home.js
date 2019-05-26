@@ -2,12 +2,16 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {MapView, Permissions, Location} from 'expo';
 import DestinationButton from './DestinationButton';
+import MenuOptions from './MenuOptions';
+import MenuButton from './MenuButton';
 import CurrentLocationButton from './CurrentLocationButton';
 import ParkingSpot from './ParkingSpot';
+import Drawer from 'react-native-drawer';
 
  class Home extends React.Component {
    state = {
-     region: null
+     region: null,
+     menuOpen:false
    }
 
    componentDidMount(){
@@ -27,6 +31,12 @@ import ParkingSpot from './ParkingSpot';
 
      this.setState({region: region})
    }
+   closeMenuPanel = () => {
+    this._drawer.close()
+    };
+   openMenuPanel = () => {
+      this._drawer.open()
+    };
 
    centerMap =  ()=>{
      const{
@@ -43,10 +53,25 @@ import ParkingSpot from './ParkingSpot';
        })
    }
   render() {
+    console.log("Menu Open?",this.state.menuOpen);
     return (
-      <View style={styles.container}>
+      <Drawer
+        ref={(ref) => this._drawer = ref}
+        open={this.state.menuOpen}
+        content={<MenuOptions />}
+        type="overlay"
+        tapToClose={true}
+        openDrawerOffset={0.2}
+        panCloseMask={0.2}
+        closedDrawerOffset={-3}
+        styles={drawerStyles}
+        tweenHandler={(ratio) => ({
+        main: { opacity:(2-ratio)/2 }
+      })}
+        >
         <DestinationButton/>
         <CurrentLocationButton cb={()=>{this.centerMap()}}/>
+        <MenuButton cb={()=>{this.centerMap()}} onPress={()=>{this.setState({menuOpen:true})}}/>
         <MapView
         ref={(map)=>{this.map = map}}
         showsUserLocation={true}
@@ -59,7 +84,7 @@ import ParkingSpot from './ParkingSpot';
           longitude:-122.4324,
         }}}/>
         </MapView>
-      </View>
+      </Drawer>
     );
   }
 }
@@ -71,5 +96,9 @@ const styles = StyleSheet.create({
   },
 });
 
+const drawerStyles= {
+  drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3},
+  main: {paddingLeft: 3},
+}
 
 export default Home;
