@@ -22,14 +22,14 @@ class Login extends React.Component {
   .catch(err=>console.log(err))
   }
 
-  isUserLoggedIn = (token)=>{
-    console.log("In user login",token)
-    if (token) {
-      AsyncStorage.setItem('token', JSON.stringify(token))
+  isUserLoggedIn = (res)=>{
+    console.log("In user login",res)
+    if (res.jwt) {
+      AsyncStorage.setItem('token', JSON.stringify(res.jwt))
     }else {
       return null
     }
-    if (token) {
+    if (res.jwt) {
       console.log("In isUserLoggedIn",true);
       this.props.navigation.navigate('Home')
     }else {
@@ -43,7 +43,7 @@ class Login extends React.Component {
     return (
       <ScrollView>
           <TextInput onChangeText={(username)=>this.setState({username:username})}name="username"style={styles.textInput} placeholder={"Username here..."}maxLength={20}/>
-          <TextInput onChangeText={(password)=>this.setState({password:password})} name="password"style={styles.textInput} placeholder={"Password here..."}maxLength={20}/>
+          <TextInput secureTextEntry onChangeText={(password)=>this.setState({password:password})} name="password"style={styles.textInput} placeholder={"Password here..."}maxLength={20}/>
           <TouchableOpacity style={styles.buttonContainer} onPress={()=>this.onLogin(this.state)}>
              <Text  style={styles.buttonText}>Login</Text>
           </TouchableOpacity>

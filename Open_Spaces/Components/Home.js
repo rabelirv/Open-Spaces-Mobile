@@ -7,11 +7,12 @@ import MenuButton from './MenuButton';
 import CurrentLocationButton from './CurrentLocationButton';
 import ParkingSpot from './ParkingSpot';
 import Drawer from 'react-native-drawer';
+// import {connect} from 'react-redux';
 
  class Home extends React.Component {
    state = {
      region: null,
-     menuOpen:false
+     menuOpen: false
    }
 
    componentDidMount(){
@@ -52,11 +53,26 @@ import Drawer from 'react-native-drawer';
          longitudeDelta
        })
    }
+
+   logOut = ()=>{
+     if (this.state.token) {
+       AsyncStorage.clear()
+       .then(res=>{
+         console.log("Inside Logout:",res)
+         this.setState({
+           token:null
+         })
+       })
+     }else {
+       return null
+     }
+   }
+
   render() {
-    console.log("Menu Open?",this.state.menuOpen);
+    console.log("Inside HOme",this.props.context);
     return (
+      <View>
       <Drawer
-        ref={(ref) => this._drawer = ref}
         open={this.state.menuOpen}
         content={<MenuOptions />}
         type="overlay"
@@ -71,7 +87,7 @@ import Drawer from 'react-native-drawer';
         >
         <DestinationButton/>
         <CurrentLocationButton cb={()=>{this.centerMap()}}/>
-        <MenuButton cb={()=>{this.centerMap()}} onPress={()=>{this.setState({menuOpen:true})}}/>
+        <MenuButton cb={()=>this.setState({menuOpen:true})}/>
         <MapView
         ref={(map)=>{this.map = map}}
         showsUserLocation={true}
@@ -85,9 +101,18 @@ import Drawer from 'react-native-drawer';
         }}}/>
         </MapView>
       </Drawer>
+      </View>
     );
   }
 }
+
+// const mapStateToProps = state => ({
+//     token: state.token,
+// });
+//
+// const mapDispatchToProps = dispatch => ({
+//     removeUserToken: () => dispatch(removeUserToken()),
+// });
 
 const styles = StyleSheet.create({
   container: {
@@ -102,3 +127,4 @@ const drawerStyles= {
 }
 
 export default Home;
+// connect(mapStateToProps, mapDispatchToProps)(Home);
