@@ -7,7 +7,9 @@ import MenuButton from './MenuButton';
 import CurrentLocationButton from './CurrentLocationButton';
 import ParkingSpot from './ParkingSpot';
 import Drawer from 'react-native-drawer';
-// import {connect} from 'react-redux';
+import {connect} from 'react-redux';
+import {AsyncStorage,Platform, Animated,StyleSheet,Text,Image,TouchableOpacity,View,Dimensions,InteractionManager,} from 'react-native';
+import {removeUserToken,getUserToken} from '../actions';
 
  class Home extends React.Component {
    state = {
@@ -16,8 +18,10 @@ import Drawer from 'react-native-drawer';
    }
 
    componentDidMount(){
+     this.props.getUserToken()
      this.__getLocationAsync()
    }
+
    __getLocationAsync = async ()=>{
      let { status } = await Permissions.askAsync(Permissions.LOCATION)
      if(status !== 'granted')
@@ -54,27 +58,11 @@ import Drawer from 'react-native-drawer';
        })
    }
 
-   logOut = ()=>{
-     if (this.state.token) {
-       AsyncStorage.clear()
-       .then(res=>{
-         console.log("Inside Logout:",res)
-         this.setState({
-           token:null
-         })
-       })
-     }else {
-       return null
-     }
-   }
-
   render() {
-    console.log("Inside HOme",this.props.context);
     return (
-      <View>
       <Drawer
         open={this.state.menuOpen}
-        content={<MenuOptions />}
+        content={<MenuOptions navigation={this.props.navigation}/>}
         type="overlay"
         tapToClose={true}
         openDrawerOffset={0.2}
@@ -85,7 +73,7 @@ import Drawer from 'react-native-drawer';
         main: { opacity:(2-ratio)/2 }
       })}
         >
-        <DestinationButton/>
+        <DestinationButton cb={()=>{this.props.navigation.navigate("ParkingForm")}}/>
         <CurrentLocationButton cb={()=>{this.centerMap()}}/>
         <MenuButton cb={()=>this.setState({menuOpen:true})}/>
         <MapView
@@ -101,18 +89,18 @@ import Drawer from 'react-native-drawer';
         }}}/>
         </MapView>
       </Drawer>
-      </View>
     );
   }
 }
 
-// const mapStateToProps = state => ({
-//     token: state.token,
-// });
-//
-// const mapDispatchToProps = dispatch => ({
-//     removeUserToken: () => dispatch(removeUserToken()),
-// });
+const mapStateToProps = state => ({
+    token: state.token,
+});
+
+const mapDispatchToProps = dispatch => ({
+    removeUserToken: () => dispatch(removeUserToken()),
+    getUserToken:()=>dispatch(getUserToken())
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -126,5 +114,4 @@ const drawerStyles= {
   main: {paddingLeft: 3},
 }
 
-export default Home;
-// connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

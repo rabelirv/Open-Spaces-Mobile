@@ -1,6 +1,8 @@
 import React from 'react';
 import {ScrollView, TextInput, StyleSheet, TouchableOpacity, Text, AsyncStorage} from 'react-native';
 import {Card, Button,FormLabel,FormInput} from 'react-native-elements';
+import {connect} from 'react-redux';
+import {saveUserToken,getUserToken} from '../actions';
 
 class SignUp extends React.Component {
   state = {
@@ -43,6 +45,7 @@ class SignUp extends React.Component {
   }
 
   render(){
+    console.log(this.props);
     return(
       <ScrollView>
           <TextInput onChangeText={(username)=>this.setState({username:username})}name="username"style={styles.textInput} placeholder={"Username here..."}maxLength={20}/>
@@ -84,4 +87,14 @@ goToLogin:{
     },
 })
 
-export default SignUp
+const mapStateToProps = (state)=>{
+  return{token: state.token}
+}
+const mapDispatchToProps = (dispatch)=>{
+  return{
+    saveUserToken:userInfo=>dispatch(saveUserToken(userInfo)),
+    getUserToken:()=>dispatch(getUserToken())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp)

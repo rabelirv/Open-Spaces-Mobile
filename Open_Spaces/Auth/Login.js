@@ -1,6 +1,8 @@
 import React from 'react';
 import { ScrollView, StyleSheet, TextInput, Button, TouchableOpacity, Text, AsyncStorage} from 'react-native';
 import { createSwitchNavigator, createStackNavigator, createAppContainer } from 'react-navigation';
+import {connect} from 'react-redux';
+import {saveUserToken,getUserToken} from '../actions';
 
 class Login extends React.Component {
   state = {
@@ -8,36 +10,41 @@ class Login extends React.Component {
     password:""
   }
 
+  componentDidMount(){
+    this.__asyncgetUserToken()
+  }
+
+  __asyncgetUserToken = ()=>{
+    this.props.getUserToken()
+      if (this.props.token.token) {
+        this.props.navigation.navigate("Home")
+      } else {
+        this.props.navigation.navigate("Login")
+
+      }
+    }
+
   onLogin = (state)=>{
-    fetch('http://localhost:3000/api/v1/login',{
-    method: 'POST',
-    headers: {
-      'Content-Type':'application/json',
-      Accept:'application/json'
-    },
-    body: JSON.stringify({user:state})
-  })
-  .then(res =>res.json())
-  .then(res =>this.isUserLoggedIn(res))
-  .catch(err=>console.log(err))
+    fetch("http://localhost:3000/api/v1/login", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({user:state})
+    })
+      .then(resp => resp.json())
+      .then(data => {
+          AsyncStorage.setItem("token", data.jwt)
+          this.props.saveUserToken(data.jwt)
+          this.isUserAuthenticated()
+      })
+
   }
 
-  isUserLoggedIn = (res)=>{
-    console.log("In user login",res)
-    if (res.jwt) {
-      AsyncStorage.setItem('token', JSON.stringify(res.jwt))
-    }else {
-      return null
-    }
-    if (res.jwt) {
-      console.log("In isUserLoggedIn",true);
-      this.props.navigation.navigate('Home')
-    }else {
-      console.log("In isUserLoggedIn",false);
-      this.props.navigation.navigate('Login')
-    }
+  isUserAuthenticated = ()=>{
+    this.props.token.token? (this.props.navigation.navigate("Home")):(this.props.navigation.navigate("Login"))
   }
-
 
   render() {
     return (
@@ -78,5 +85,14 @@ class Login extends React.Component {
       },
   })
 
+const mapStateToProps = (state)=>{
+  return{token: state.token}
+}
+const mapDispatchToProps = (dispatch)=>{
+  return{
+    saveUserToken:userInfo=>dispatch(saveUserToken(userInfo)),
+    getUserToken:()=>dispatch(getUserToken())
+  }
+}
 
-export default Login
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

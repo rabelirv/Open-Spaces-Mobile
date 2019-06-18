@@ -7,7 +7,7 @@ const WIDTH = Dimensions.get('window').width;
 class DestinationButton extends React.Component{
   render(){
     return (
-      <TouchableOpacity onPress= {()=>{}} style={styles.container} >
+      <TouchableOpacity onPress={()=>this.props.cb()} style={styles.container} >
         <View style={styles.leftCol}>
           <Text style={{fontSize:8}}>{"\u25A0"}</Text>
         </View>

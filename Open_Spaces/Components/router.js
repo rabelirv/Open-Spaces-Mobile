@@ -5,6 +5,7 @@ import Home from './Home';
 import SignUp from '../Auth/SignUp';
 import Login from '../Auth/Login';
 import {FontAwesome} from 'react-native-vector-icons';
+import ParkingSpotForm from './ParkingSpotForm';
 
 const headerStyle = {
   marginTop: Platform.OS === 'ios' ? StatusBar.currentHeight : 0
@@ -39,6 +40,16 @@ navigationOptions: {
 }}
 );
 
+const ParkingFormScreen = createStackNavigator({
+  ParkingForm: {
+    screen: ParkingSpotForm,
+  }},
+{headerMode: 'none',
+navigationOptions: {
+  headerVisible: false,
+}}
+);
+
 const CreateRootNavigator =
     createSwitchNavigator(
       {
@@ -50,7 +61,8 @@ const CreateRootNavigator =
         },
         LoginScreen: {
           screen: LoginScreen
-        }
+        },
+        ParkingForm: ParkingFormScreen
       },
       {
         initialRouteName: "LoginScreen"
