@@ -13,7 +13,6 @@ class SignUp extends React.Component {
 }
 
   isUserLoggedIn = (token)=>{
-    console.log(token)
     if (token) {
       AsyncStorage.setItem('token', JSON.stringify(token))
     }else {
@@ -29,7 +28,6 @@ class SignUp extends React.Component {
   }
 
   onSignUp = (state)=>{
-    !this.props.screenProps.token ? (
     fetch('http://localhost:3000/api/v1/users',{
     method: 'POST',
     headers: {
@@ -41,7 +39,6 @@ class SignUp extends React.Component {
   .then(res =>res.json())
   .then(res => this.isUserLoggedIn(res.jwt))
   .catch(err=>console.log(err))
-) : (null)
   }
 
   render(){

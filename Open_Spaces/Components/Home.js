@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { AsyncStorage,Platform, Animated,Image,TouchableOpacity,Dimensions,InteractionManager, StyleSheet, Text, View } from 'react-native';
 import {MapView, Permissions, Location} from 'expo';
 import DestinationButton from './DestinationButton';
 import MenuOptions from './MenuOptions';
@@ -8,13 +8,19 @@ import CurrentLocationButton from './CurrentLocationButton';
 import ParkingSpot from './ParkingSpot';
 import Drawer from 'react-native-drawer';
 import {connect} from 'react-redux';
-import {AsyncStorage,Platform, Animated,StyleSheet,Text,Image,TouchableOpacity,View,Dimensions,InteractionManager,} from 'react-native';
 import {removeUserToken,getUserToken} from '../actions';
+import {RideRequestSection} from './RideRequestSection';
+import {HomeScreenButtons} from './HomeScreenButtons';
+import DestinationInput from './DestinationInput';
 
  class Home extends React.Component {
    state = {
      region: null,
-     menuOpen: false
+     menuOpen: false,
+     errorMessage: null,
+     requestSectionOpen: false,
+     destinationInputOpen: false,
+     route:null
    }
 
    componentDidMount(){
@@ -43,6 +49,35 @@ import {removeUserToken,getUserToken} from '../actions';
       this._drawer.open()
     };
 
+    setRegionToCurrentLocation=()=> {
+        this.setState({region: this.getRegionFromLocation(this.state.location)})
+    }
+
+    toggleComponentOverlay=()=> {
+        this.setState({requestSectionOpen: !this.state.requestSectionOpen})
+    }
+
+    toggleDestinationInput=()=> {
+        this.setState({destinationInputOpen: !this.state.destinationInputOpen})
+    }
+
+    componentOverlay=()=> {
+        if(this.state.requestSectionOpen)
+            return <RideRequestSection
+                backCb={() => { this.toggleComponentOverlay() }}
+                locationCb={() => { this.centerMap() }} />
+        else if(this.state.destInputOpen && !this.state.requestSectionOpen)
+            return <DestinationInput
+                backCb={() => { this.toggleDestinationInput() }}
+                coordsCb={(coords) => { this.setState({route: coords}) }} />
+        else
+            return <HomeScreenButtons
+                navigation={this.props.navigation}
+                toggleDestinationInput={() => { this.toggleDestinationInput() }}
+                toggleComponentOverlay={() => { this.toggleComponentOverlay() }}
+                setRegionToCurrentLocation={() => { this.centerMap() }} />
+    }
+
    centerMap =  ()=>{
      const{
        latitude,
@@ -60,22 +95,6 @@ import {removeUserToken,getUserToken} from '../actions';
 
   render() {
     return (
-      <Drawer
-        open={this.state.menuOpen}
-        content={<MenuOptions navigation={this.props.navigation}/>}
-        type="overlay"
-        tapToClose={true}
-        openDrawerOffset={0.2}
-        panCloseMask={0.2}
-        closedDrawerOffset={-3}
-        styles={drawerStyles}
-        tweenHandler={(ratio) => ({
-        main: { opacity:(2-ratio)/2 }
-      })}
-        >
-        <DestinationButton cb={()=>{this.props.navigation.navigate("ParkingForm")}}/>
-        <CurrentLocationButton cb={()=>{this.centerMap()}}/>
-        <MenuButton cb={()=>this.setState({menuOpen:true})}/>
         <MapView
         ref={(map)=>{this.map = map}}
         showsUserLocation={true}
@@ -87,12 +106,29 @@ import {removeUserToken,getUserToken} from '../actions';
           latitude:37.78825,
           longitude:-122.4324,
         }}}/>
+        {this.componentOverlay()}
         </MapView>
-      </Drawer>
+
     );
   }
 }
 
+// <Drawer
+// open={this.state.menuOpen}
+// content={<MenuOptions navigation={this.props.navigation}/>}
+// type="overlay"
+// tapToClose={true}
+// openDrawerOffset={0.2}
+// panCloseMask={0.2}
+// closedDrawerOffset={-3}
+// styles={drawerStyles}
+// tweenHandler={(ratio) => ({
+//   main: { opacity:(2-ratio)/2 }
+// })}
+// >
+// <DestinationButton cb={()=>{this.props.navigation.navigate("ParkingForm")}}/>
+// <CurrentLocationButton cb={()=>{this.centerMap()}}/>
+// <MenuButton cb={()=>this.setState({menuOpen:true})}/>
 const mapStateToProps = state => ({
     token: state.token,
 });

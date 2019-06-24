@@ -1,9 +1,9 @@
 {
-  "devToolsPort": 19002,
   "expoServerPort": null,
+  "expoServerNgrokUrl": "https://nz-mrs.rabelirv.open-spaces.exp.direct",
+  "packagerNgrokUrl": "https://packager.nz-mrs.rabelirv.open-spaces.exp.direct",
+  "ngrokPid": 44152,
+  "devToolsPort": 19002,
   "packagerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "packagerPid": null
 }
