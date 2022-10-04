@@ -11,7 +11,7 @@
   "dependencies": {
     "apsl-react-native-button": "^3.1.1",
     "babel-preset-react-native": "^4.0.1",
-    "expo": "^32.0.0",
+    "expo": "^46.0.14",
     "native-base": "^2.12.1",
     "react": "16.5.0",
     "react-geocode": "^0.1.2",
